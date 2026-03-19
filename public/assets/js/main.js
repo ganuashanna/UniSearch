@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStats();
     search();
     setupEventListeners();
+    setView(state.view);
 });
 
 function initTheme() {
@@ -53,7 +54,7 @@ async function loadDepartments() {
         const select = document.getElementById('deptFilter');
         data.departments.forEach(d => {
             const opt = document.createElement('option');
-            opt.value = d.id;
+            opt.value = d.name;
             opt.textContent = d.name;
             select.appendChild(opt);
         });
@@ -383,9 +384,9 @@ function clearFilters() {
     document.getElementById('admYearFilter').value = '';
     
     document.querySelectorAll('.status-pill').forEach(p => p.classList.remove('active'));
-    document.querySelector('[data-status=""]').classList.add('active');
-    document.querySelector('[data-year=""]').classList.add('active');
-    document.querySelector('[data-gender=""]').classList.add('active');
+    document.querySelector('[data-status=""]')?.classList.add('active');
+    document.querySelector('[data-year=""]')?.classList.add('active');
+    document.querySelector('[data-gender=""]')?.classList.add('active');
     
     search();
 }
@@ -452,7 +453,7 @@ function showLoading(s) {
 function showEmptyState() {
     document.getElementById('tableBody').innerHTML = `
         <tr><td colspan="8" style="text-align:center;padding:60px 20px">
-           <img src="http://bamu.ac.in/images/logo.png" style="height:60px;opacity:0.15;display:block;margin:0 auto 12px">
+           <img src="/assets/img/bamu-logo.png" style="height:60px;opacity:0.15;display:block;margin:0 auto 12px">
            <div style="color:var(--text-m);font-size:0.95rem">No students found matching your search.</div>
            <button onclick="clearFilters()" class="btn btn-outline btn-sm" style="margin-top:12px">Clear Filters</button>
         </td></tr>

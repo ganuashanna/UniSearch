@@ -10,7 +10,6 @@ window.exportManager = {
             enrollment_status: state.status,
             department_id: state.department_id,
             admission_year: state.admission_year,
-            graduation_year: state.graduation_year,
             current_year: state.current_year,
             limit: 1000 // Get all matching
         });
@@ -41,7 +40,7 @@ window.exportManager = {
             s.department_name,
             s.batch,
             `Year ${s.current_year}`,
-            s.cgpa_latest || 'N/A',
+            s.latest_cgpa || 'N/A',
             s.enrollment_status.toUpperCase()
         ]);
         
@@ -68,7 +67,7 @@ window.exportManager = {
             'Year': s.current_year,
             'Semester': s.current_semester,
             'Enrollment Status': s.enrollment_status,
-            'Latest CGPA': s.cgpa_latest,
+            'Latest CGPA': s.latest_cgpa,
             'Phone': s.phone_number
         })));
         
@@ -76,5 +75,21 @@ window.exportManager = {
         XLSX.utils.book_append_sheet(wb, ws, "Students");
         
         XLSX.writeFile(wb, `unisearch-export-${new Date().toISOString().split('T')[0]}.xlsx`);
+    },
+
+    csv() {
+        const params = new URLSearchParams({
+            q: state.query,
+            enrollment_status: state.status,
+            department_id: state.department_id,
+            admission_year: state.admission_year,
+            current_year: state.current_year,
+            gender: state.gender
+        });
+        window.location.href = `/api/export?${params.toString()}`;
     }
 };
+
+window.exportPDF = () => window.exportManager.pdf();
+window.exportExcel = () => window.exportManager.excel();
+window.exportCSV = () => window.exportManager.csv();

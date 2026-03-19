@@ -1,33 +1,38 @@
-# 🎓 UniSearch
+# UniSearch
 
-UniSearch is a high-performance, responsive student database and search engine built for modern educational institutions. It provides a seamless interface for students to find their peers and for administrators to manage records through bulk imports and detailed academic performance tracking.
+UniSearch is a student search and records portal for Dr. Babasaheb Ambedkar Marathwada University. It includes a public search experience, CSV export, and an admin dashboard for CSV imports and semester record management.
 
-## 🧱 Tech Stack
-*   **Frontend**: HTML5, CSS3, Vanilla JS (ES6+), [Tailwind CSS](https://tailwindcss.com), [Font Awesome](https://fontawesome.com).
-*   **Backend**: PHP 8.2 (Serverless PHP via Vercel Runtime), Supabase REST API for database communication.
-*   **Database**: Supabase Managed PostgreSQL.
-*   **Export Support**: [jsPDF](https://github.com/parallax/jsPDF) and [SheetJS](https://sheetjs.com) for PDF and Excel exports.
-*   **Animations**: [AOS.js](http://michalsnik.github.io/aos/) and [CountUp.js](https://inorganik.github.io/countUp.js/).
+## Tech Stack
+- Frontend: HTML, CSS, Vanilla JavaScript, Tailwind CSS, Font Awesome
+- Backend: Node.js serverless functions on Vercel
+- Database: Supabase Postgres via the Supabase REST API
+- Exports: jsPDF and SheetJS
 
-## 🚀 Key Features
-*   **Instant Search**: Full-text search with autocomplete across 1,000+ records.
-*   **Advanced Filters**: Filter by Department, Admission Year, Graduation Year, Current Semester, and Enrollment Status.
-*   **Dual View**: Switch between **Table View** for dense data and **Grid View** for student profile cards.
-*   **Academic History**: Track students across their entire educational journey with detailed semester-wise CGPA and attendance reports.
-*   **Admin Dashboard**:
-    *   **Bulk Import**: Upload `.xlsx` or `.csv` files to import hundreds of students instantly.
-    *   **Dashboard Stats**: Beautiful, animated charts mapping student distribution by batch.
-    *   **Result Management**: Add or update individual semester results with a few clicks.
-*   **Premium Design**: Dark mode default, Glassmorphism elements, and fully responsive across mobile and desktop.
-*   **PDF/Excel Reports**: Export filtered student lists with custom styling.
+## Features
+- Student search with autocomplete
+- Filters by status, department, and admission year
+- Table and grid result views
+- Student profile modal with semester history
+- CSV, PDF, and Excel exports
+- Admin login, CSV import, and semester result updates
 
-## 🛠️ Getting Started
-1.  **Clone the Repo**: `git clone https://github.com/your-username/UniSearch.git`
-2.  **Local Dev**: Run `vercel dev` if you have the [Vercel CLI](https://vercel.com/docs/cli) installed, or serve the `public/` folder while ignoring API routes locally.
-3.  **Deployment**: See [DEPLOYMENT.md](./DEPLOYMENT.md) for a step-by-step guide to setting up Supabase and Vercel.
+## Local Development
+1. Install the Vercel CLI if needed: `npm i -g vercel`
+2. Add the required environment variables in `.env.local` or in your Vercel project
+3. Run locally with `vercel dev`
 
-## 🔐 Admin Access
-The default admin password is set to `admin123` via the `.env.example` file. This can be changed in your Vercel project settings or Supabase secrets.
+Required environment variables:
 
----
-Built with ❤️ for universities everywhere.
+```env
+SUPABASE_URL=your_project_url
+SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+ADMIN_PASSWORD=your_admin_password
+JWT_SECRET=any_32_character_random_string
+```
+
+## Admin Access
+Set `ADMIN_PASSWORD` in your environment. The fallback default is `admin123`, but you should change it in production.
+
+## Deployment
+Deployment and database setup steps are in [DEPLOYMENT.md](./DEPLOYMENT.md).

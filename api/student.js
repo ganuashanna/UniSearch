@@ -13,28 +13,28 @@ export default async function handler(req, res) {
 
   const [stuRes, semRes] = await Promise.all([
     supabaseRequest('GET',
-      `/rest/v1/students?id=eq.${id}`
-    + `&select=*,departments(name,code,total_years)`
-    + `&limit=1`
+      `/rest/v1/students?id=eq.${id}&select=*&limit=1`
     ),
     supabaseRequest('GET',
-      `/rest/v1/semesters?student_id=eq.${id}`
-    + `&select=*&order=semester_number.asc`
+      `/rest/v1/semesters?student_id=eq.${id}&select=*&order=semester_number.asc`
     ),
   ]);
 
-  const students = stuRes.data || [];
+  const students = Array.isArray(stuRes.data) ? stuRes.data : [];
   if (!students.length)
     return res.status(404).json({ error: 'Student not found' });
 
-  const student    = addComputedFields(students[0]);
-  student.semesters = semRes.data || [];
+  const student = addComputedFields(students[0]);
+  student.semesters = Array.isArray(semRes.data) ? semRes.data : [];
 
   if (student.semesters.length) {
     const last = student.semesters.at(-1);
-    student.latest_cgpa = last.cgpa ?? 0;
-    student.latest_sgpa = last.sgpa ?? 0;
+    student.latest_cgpa = last?.cgpa ?? 0;
+    student.latest_sgpa = last?.sgpa ?? 0;
+  } else {
+    student.latest_cgpa = 0;
+    student.latest_sgpa = 0;
   }
 
-  res.json(student);
+  return res.status(200).json(student);
 }
