@@ -4,225 +4,934 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard | UniSearch Dr. BAMU</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="flex">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #F0F4FF; }
 
+    /* Layout */
+    .dash-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .dash-sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: #003087;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar-top {
+      padding: 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: #001F5B;
+    }
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      margin-bottom: 3px;
+      white-space: nowrap;
+    }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      background: #F47920;
+      color: white;
+    }
+    .sidebar-nav a i {
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .sidebar-bottom {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Main content */
+    .dash-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .dash-topbar {
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .dash-content {
+      padding: 28px;
+      flex: 1;
+    }
+
+    /* Sections */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Stat cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 22px;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .stat-card.blue::after   { background: #003087; }
+    .stat-card.green::after  { background: #10B981; }
+    .stat-card.orange::after { background: #F47920; }
+    .stat-card.purple::after { background: #8B5CF6; }
+    .stat-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #003087;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-lbl {
+      font-size: 0.72rem;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    /* Cards */
+    .dash-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.06);
+      overflow: hidden;
+    }
+    .dash-card-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid #F3F4F6;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #003087;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-card-body { padding: 20px; }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed #C3D4F0;
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #F8FAFF;
+    }
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: #F47920;
+      background: #FFF5EB;
+    }
+
+    /* Progress bar */
+    .prog-track {
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #003087, #F47920);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 9999;
+    }
+    .toast {
+      padding: 13px 18px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      animation: slideUp 0.3s ease;
+    }
+    .toast.success { background: #003087; color: white; }
+    .toast.error   { background: #EF4444; color: white; }
+    .toast.info    { background: #F47920; color: white; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn-navy {
+      background: #003087; color: white;
+      border: none; border-radius: 8px;
+      padding: 10px 20px; font-size: 0.875rem;
+      font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 7px;
+      transition: background 0.15s;
+    }
+    .btn-navy:hover { background: #0055A4; }
+    .btn-navy:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-orange {
+      background: #F47920; color: white;
+      border: none; border-radius: 8px;
+      padding: 10px 20px; font-size: 0.875rem;
+      font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-outline {
+      background: white; color: #003087;
+      border: 1.5px solid #003087; border-radius: 8px;
+      padding: 8px 16px; font-size: 0.82rem;
+      font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+
+    /* Autocomplete */
+    .ac-dropdown {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: white;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      z-index: 50;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .ac-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #F3F4F6;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .ac-item:hover { background: #EBF2FF; }
+    .ac-item:last-child { border-bottom: none; }
+
+    /* Sem grid */
+    .sem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .sem-block {
+      background: #F8FAFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .sem-block.pass     { border-left: 4px solid #10B981; }
+    .sem-block.fail     { border-left: 4px solid #EF4444; }
+    .sem-block.backlog  { border-left: 4px solid #F59E0B; }
+    .sem-block.pending  { border-left: 4px solid #6366F1; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dash-sidebar { display: none; }
+      .stats-grid   { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* File preview table */
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    .preview-table th {
+      background: #003087;
+      color: white;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+    .preview-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #F3F4F6;
+      color: #374151;
+    }
+    .preview-table tr:nth-child(even) td {
+      background: #F8FAFF;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Auth guard -->
 <script>
-// Authentication check (runs immediately)
-const token = localStorage.getItem('uni_admin_token');
-if (!token) window.location.href = '/admin';
+  const _tok = localStorage.getItem('uni_admin_token');
+  if (!_tok) window.location.href = '/admin';
 </script>
 
-<!-- SIDEBAR -->
-<aside class="sidebar fixed h-full z-50 overflow-y-auto">
-    <div class="sidebar-logo text-center py-8">
-       <img src="/assets/img/bamu-logo.png" class="h-20 mx-auto mb-4 filter brightness-125">
-       <h2 class="text-xs font-black uppercase tracking-widest text-white/50 px-4">UniSearch Portal</h2>
-       <p class="text-[9px] font-bold text-orange px-4">Dr. BAMU Chhatrapati Sambhajinagar</p>
+<div class="dash-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-top">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <img src="/assets/img/bamu-logo.png" alt="BAMU"
+             style="height:40px;filter:brightness(0) invert(1)"
+             onerror="this.style.display='none'">
+        <div>
+          <div style="color:white;font-weight:800;font-size:0.95rem">
+            UniSearch
+          </div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.65rem;
+            text-transform:uppercase;letter-spacing:0.08em">
+            Admin Portal
+          </div>
+        </div>
+      </div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);
+        padding-top:6px;border-top:1px solid rgba(255,255,255,0.1);
+        margin-top:6px">
+        Dr. BAMU Chhatrapati Sambhajinagar
+      </div>
     </div>
-    
-    <nav class="sidebar-nav mt-4 space-y-1">
-       <a href="#" class="sidebar-link active" onclick="switchSection('overview')">
-          <i class="fa fa-chart-line"></i> Dashboard Overview
-       </a>
-       <a href="#" class="sidebar-link" onclick="switchSection('import')">
-          <i class="fa fa-file-import"></i> Bulk Student Import
-       </a>
-       <a href="#" class="sidebar-link" onclick="switchSection('academic')">
-          <i class="fa fa-graduation-cap"></i> Academic Records
-       </a>
-       <a href="/" class="sidebar-link text-white/40 mt-8 border-t border-white/5 pt-6">
-          <i class="fa fa-search"></i> Public Search Side
-       </a>
-       <button id="logoutBtn" onclick="logout()" class="sidebar-link w-full text-left text-red-400 hover:text-red-300">
-          <i class="fa fa-sign-out-alt"></i> Logout Securely
-       </button>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="active" data-section="overview"
+         onclick="switchSection('overview');return false">
+        <i class="fa fa-chart-line"></i>
+        Dashboard Overview
+      </a>
+      <a href="#" data-section="import"
+         onclick="switchSection('import');return false">
+        <i class="fa fa-file-import"></i>
+        Bulk Student Import
+      </a>
+      <a href="#" data-section="academic"
+         onclick="switchSection('academic');return false">
+        <i class="fa fa-graduation-cap"></i>
+        Academic Records
+      </a>
+      <a href="/" style="margin-top:8px">
+        <i class="fa fa-search"></i>
+        Public Search Side
+      </a>
     </nav>
-    
-    <div class="mt-auto p-6 text-center">
-       <div class="bg-white/5 p-4 rounded-xl backdrop-blur-sm border border-white/5">
-          <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">NAAC Accredited</p>
-          <img src="/assets/img/naac-grade.png" class="h-10 mx-auto mt-2 opacity-60">
-       </div>
+
+    <div class="sidebar-bottom">
+      <!-- NAAC badge -->
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;
+        padding:10px;text-align:center;margin-bottom:12px">
+        <img src="/assets/img/naac-grade.png" alt="NAAC"
+             style="height:56px;margin:0 auto;display:block"
+             onerror="this.style.display='none'">
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);
+          margin-top:4px;text-transform:uppercase;font-weight:700">
+          NAAC ACCREDITED
+        </div>
+      </div>
+
+      <button onclick="logout()"
+        style="width:100%;padding:10px;background:rgba(239,68,68,0.15);
+        color:#FCA5A5;border:1px solid rgba(239,68,68,0.2);
+        border-radius:8px;font-size:0.85rem;font-weight:700;
+        cursor:pointer;display:flex;align-items:center;
+        justify-content:center;gap:8px;
+        transition:background 0.15s"
+        onmouseover="this.style.background='rgba(239,68,68,0.25)'"
+        onmouseout="this.style.background='rgba(239,68,68,0.15)'">
+        <i class="fa fa-sign-out-alt"></i>
+        Logout Securely
+      </button>
     </div>
-</aside>
+  </aside>
 
-<!-- MAIN CONTENT -->
-<main class="flex-1 ml-[260px] min-h-screen bg-gray-50 flex flex-col">
-    <!-- Header -->
-    <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 sticky top-0 z-40">
-       <div class="flex items-center gap-4">
-          <div id="sectionTitleIcon" class="w-10 h-10 bg-blue-50 text-navy rounded-lg flex items-center justify-center text-lg">
-             <i class="fa fa-chart-line"></i>
-          </div>
-          <h1 id="sectionTitle" class="text-xl font-black text-navy uppercase tracking-tighter">System Overview</h1>
-       </div>
-       <div class="flex items-center gap-6">
-          <div class="text-right">
-             <p class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Admin Active</p>
-             <p class="text-xs font-bold text-navy">University Administrator</p>
-          </div>
-          <div class="w-10 h-10 rounded-full bg-orange flex items-center justify-center text-white font-black border-2 border-orange/20 shadow-lg shadow-orange/20">A</div>
-       </div>
-    </header>
+  <!-- MAIN -->
+  <div class="dash-main">
 
-    <div class="p-10 flex-1">
-       <!-- Dashboard Overview Section -->
-       <section id="section_overview" class="section-content space-y-10 animate-fade-in">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-             <div class="stat-card">
-                <div class="text-4xl font-black text-navy" id="statTotalStudents">...</div>
-                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Total Enrolled</div>
-             </div>
-             <div class="stat-card">
-                <div class="text-4xl font-black text-emerald-500" id="statActiveStudents">...</div>
-                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Active Students</div>
-             </div>
-             <div class="stat-card">
-                <div class="text-4xl font-black text-orange" id="statDepartments">...</div>
-                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Departments</div>
-             </div>
-             <div class="stat-card">
-                <div class="text-4xl font-black text-blue-500" id="statAvgCGPA">...</div>
-                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Avg University CGPA</div>
-             </div>
+    <!-- TOP BAR -->
+    <div class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="sectionTitleIcon"
+             style="width:34px;height:34px;background:#EBF2FF;
+             border-radius:8px;display:flex;align-items:center;
+             justify-content:center;color:#003087;font-size:0.9rem">
+          <i class="fa fa-chart-line"></i>
+        </div>
+        <h1 id="sectionTitle"
+            style="font-size:1rem;font-weight:800;
+            color:#003087;text-transform:uppercase;
+            letter-spacing:0.06em">
+          System Overview
+        </h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="text-align:right">
+          <div style="font-size:0.7rem;color:#9CA3AF;
+            text-transform:uppercase;font-weight:700">
+            Admin Active
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-             <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl overflow-hidden relative">
-                <h3 class="text-sm font-black text-navy uppercase tracking-widest mb-6 flex items-center gap-3">
-                   <span class="w-1.5 h-4 bg-orange rounded-full"></span> Batch Distribution
-                </h3>
-                <div id="batchChart" class="space-y-4"></div>
-             </div>
-             <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl overflow-hidden relative">
-                <h3 class="text-sm font-black text-navy uppercase tracking-widest mb-6 flex items-center gap-3">
-                   <span class="w-1.5 h-4 bg-orange rounded-full"></span> NAAC & NIRF STATS
-                </h3>
-                <div class="grid grid-cols-2 gap-6 p-6 bg-gray-50 rounded-2xl">
-                    <img src="/assets/img/naac-grade.png" class="h-28 mx-auto grayscale hover:grayscale-0 transition-all cursor-crosshair">
-                    <img src="/assets/img/nirf-ranking.png" class="h-28 mx-auto grayscale hover:grayscale-0 transition-all cursor-crosshair">
-                </div>
-                <p class="text-[11px] text-gray-500 font-medium leading-relaxed mt-6 italic text-center">
-                    Dr. BAMU stands as a premier educational light in Maharashtra.
-                </p>
-             </div>
+          <div style="font-size:0.82rem;font-weight:700;color:#003087">
+            University Administrator
           </div>
-       </section>
-
-       <!-- Import Students Section -->
-       <section id="section_import" class="section-content hidden space-y-8 animate-fade-in">
-          <div class="bg-white p-10 rounded-2xl border border-gray-100 shadow-xl">
-             <div class="flex items-center justify-between mb-8">
-                <div>
-                   <h2 class="text-xl font-black text-navy">Bulk Spreadsheet Import</h2>
-                   <p class="text-sm text-gray-500 font-medium">Upload .csv file with student records</p>
-                </div>
-                <button onclick="downloadTemplate()" class="btn btn-outline text-xs">
-                   <i class="fa fa-download mr-2"></i> Download Template CSV
-                </button>
-             </div>
-             
-             <div id="dropZone" class="upload-zone group">
-                <div class="w-20 h-20 bg-blue-50 text-navy rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-orange group-hover:text-white transition-all transform group-hover:scale-110 shadow-lg shadow-blue-500/10">
-                   <i class="fa fa-cloud-upload-alt text-3xl"></i>
-                </div>
-                <p class="text-lg font-black text-navy mb-1">Drag & Drop Your File Here</p>
-                <p class="text-gray-400 text-sm font-medium mb-8">Supports .CSV files specifically (XLSX must be converted first)</p>
-                <input type="file" id="fileInput" class="hidden" accept=".csv">
-                <button onclick="document.getElementById('fileInput').click()" class="btn btn-primary px-10 h-14 rounded-xl shadow-xl shadow-navy/20">
-                   Select CSV File From Computer
-                </button>
-             </div>
-
-             <div id="filePreview" class="hidden mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100 animate-fade-in">
-                <div class="flex items-center justify-between mb-4">
-                   <div class="flex items-center gap-4">
-                      <i class="fa fa-file-csv text-emerald-500 text-2xl"></i>
-                      <div>
-                         <p id="previewFileName" class="text-sm font-bold text-navy"></p>
-                         <p id="previewFileSize" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest"></p>
-                      </div>
-                   </div>
-                   <button id="importBtn" onclick="doImport()" class="btn btn-orange px-8 h-12 rounded-lg shadow-lg shadow-orange/20">
-                      <i class="fa fa-play mr-2"></i> Start Importing Now
-                   </button>
-                </div>
-                <div id="importProgress" class="hidden mt-6">
-                   <div class="progress-bar mb-2"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
-                   <p class="text-[10px] text-center font-bold text-navy uppercase tracking-widest" id="progressLabel">0% Complete</p>
-                </div>
-             </div>
-          </div>
-       </section>
-
-       <!-- Academic Records Section -->
-       <section id="section_academic" class="section-content hidden space-y-8 animate-fade-in">
-          <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl">
-             <h2 class="text-xl font-black text-navy mb-2">Student Performance Management</h2>
-             <p class="text-sm text-gray-500 font-medium mb-8">Search for a student to add or manage their semester-wise results</p>
-             
-             <div class="relative max-w-lg mb-10">
-                <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 italic"></i>
-                <input type="text" id="studentSearchInput" placeholder="Search by name or ID..." 
-                       class="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-xl pl-12 pr-4 text-navy font-bold focus:border-orange outline-none transition-all">
-                <div id="adminAutocomplete" class="autocomplete-dropdown hidden"></div>
-             </div>
-
-             <div id="manageStudentArea" class="hidden animate-fade-in">
-                <div class="p-6 bg-navy rounded-2xl text-white mb-8 flex items-center justify-between">
-                   <div class="flex items-center gap-6">
-                      <div id="asAvatar" class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-xl font-black border-2 border-white/20">JS</div>
-                      <div>
-                         <h3 id="asName" class="text-lg font-bold">John Shinde</h3>
-                         <p id="asID" class="text-xs text-white/50 font-bold tracking-widest">CS2021001</p>
-                      </div>
-                   </div>
-                   <button onclick="openAddSemModal()" class="btn btn-orange">
-                      <i class="fa fa-plus-circle mr-2"></i> Add Semester Result
-                   </button>
-                </div>
-                <div id="asSemsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-             </div>
-          </div>
-       </section>
+        </div>
+        <div style="width:36px;height:36px;border-radius:50%;
+          background:#EBF2FF;display:flex;align-items:center;
+          justify-content:center;font-weight:800;color:#003087">
+          A
+        </div>
+      </div>
     </div>
-</main>
 
-<!-- MODALS -->
-<div id="semModal" class="modal-backdrop hidden" onclick="if(event.target==this)this.classList.add('hidden')">
-  <div class="modal-panel max-w-md p-10">
-     <h3 class="text-xl font-black text-navy mb-8">Add Semester Result</h3>
-     <form id="semForm" class="space-y-6">
-        <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">Semester Number</label>
-             <select name="semester_number" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
+    <!-- CONTENT -->
+    <div class="dash-content">
+
+      <!-- ══════════ OVERVIEW SECTION ══════════ -->
+      <div id="section_overview" class="section active">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-icon"
+                 style="background:#EBF2FF;color:#003087">
+              <i class="fa fa-users"></i>
+            </div>
+            <div class="stat-num" id="statTotalStudents">—</div>
+            <div class="stat-lbl">Total Enrolled</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon"
+                 style="background:#D1FAE5;color:#065F46">
+              <i class="fa fa-user-check"></i>
+            </div>
+            <div class="stat-num"
+                 style="color:#10B981" id="statActiveStudents">—</div>
+            <div class="stat-lbl">Active Students</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon"
+                 style="background:#FEF3C7;color:#92400E">
+              <i class="fa fa-building"></i>
+            </div>
+            <div class="stat-num"
+                 style="color:#F47920" id="statDepartments">—</div>
+            <div class="stat-lbl">Departments</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon"
+                 style="background:#EDE9FE;color:#5B21B6">
+              <i class="fa fa-star"></i>
+            </div>
+            <div class="stat-num"
+                 style="color:#7C3AED" id="statAvgCGPA">—</div>
+            <div class="stat-lbl">Avg University CGPA</div>
+          </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-           <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">SGPA</label>
-           <input type="number" step="0.01" name="sgpa" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold" value="0.00"></div>
-           <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">CGPA</label>
-           <input type="number" step="0.01" name="cgpa" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold" value="0.00"></div>
+
+        <!-- Two column grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;
+          gap:20px">
+
+          <!-- Batch chart -->
+          <div class="dash-card">
+            <div class="dash-card-head">
+              <i class="fa fa-chart-bar"></i>
+              Batch Distribution
+            </div>
+            <div class="dash-card-body" id="batchChart">
+              <div style="text-align:center;color:#9CA3AF;
+                padding:20px;font-size:0.82rem">
+                Loading...
+              </div>
+            </div>
+          </div>
+
+          <!-- NAAC/NIRF -->
+          <div class="dash-card">
+            <div class="dash-card-head">
+              <i class="fa fa-award"></i>
+              NAAC &amp; NIRF Stats
+            </div>
+            <div class="dash-card-body"
+                 style="display:flex;gap:16px;
+                 align-items:center;justify-content:center;
+                 flex-wrap:wrap">
+              <img src="/assets/img/naac-grade.png" alt="NAAC"
+                   style="height:90px"
+                   onerror="this.style.display='none'">
+              <img src="/assets/img/nirf-ranking.png" alt="NIRF"
+                   style="height:90px"
+                   onerror="this.style.display='none'">
+              <p style="width:100%;text-align:center;
+                font-size:0.8rem;color:#9CA3AF;
+                font-style:italic;margin-top:8px">
+                Dr. BAMU stands as a premier educational
+                light in Maharashtra.
+              </p>
+            </div>
+          </div>
+
         </div>
-        <div class="grid grid-cols-2 gap-4">
-           <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">Attendance %</label>
-           <input type="number" step="0.1" name="attendance_pct" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold" value="75.0"></div>
-           <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">Result</label>
-           <select name="result" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold"><option value="pass">PASS</option><option value="backlog">BACKLOG</option><option value="fail">FAIL</option></select></div>
+      </div>
+
+      <!-- ══════════ IMPORT SECTION ══════════ -->
+      <div id="section_import" class="section">
+
+        <!-- Upload card -->
+        <div class="dash-card" style="margin-bottom:20px">
+          <div class="dash-card-head">
+            <i class="fa fa-cloud-upload-alt"></i>
+            Import Student Data
+          </div>
+          <div class="dash-card-body">
+
+            <div class="upload-zone" id="dropZone"
+                 onclick="document.getElementById('fileInput').click()">
+              <input type="file" id="fileInput"
+                     accept=".csv,.xlsx,.xls"
+                     style="display:none">
+              <i class="fa fa-cloud-upload-alt"
+                 style="font-size:2.5rem;color:#C3D4F0;
+                 display:block;margin-bottom:12px"></i>
+              <div style="font-size:1rem;font-weight:700;
+                color:#003087;margin-bottom:6px">
+                Drag &amp; Drop your file here
+              </div>
+              <div style="font-size:0.82rem;color:#9CA3AF;
+                margin-bottom:14px">
+                or click to browse files
+              </div>
+              <div style="display:flex;gap:8px;
+                justify-content:center;flex-wrap:wrap">
+                <span style="background:#EBF2FF;color:#003087;
+                  padding:3px 12px;border-radius:999px;
+                  font-size:0.72rem;font-weight:700">
+                  .CSV
+                </span>
+                <span style="background:#EBF2FF;color:#003087;
+                  padding:3px 12px;border-radius:999px;
+                  font-size:0.72rem;font-weight:700">
+                  .XLSX
+                </span>
+                <span style="background:#EBF2FF;color:#003087;
+                  padding:3px 12px;border-radius:999px;
+                  font-size:0.72rem;font-weight:700">
+                  .XLS
+                </span>
+              </div>
+              <div style="font-size:0.72rem;color:#D1D5DB;
+                margin-top:10px">
+                Maximum file size: 10 MB
+              </div>
+            </div>
+
+            <!-- File preview area -->
+            <div id="filePreview" style="display:none;margin-top:20px">
+              <div style="display:flex;align-items:center;
+                justify-content:space-between;margin-bottom:14px;
+                padding:12px 16px;background:#F8FAFF;
+                border-radius:8px;border:1px solid #E5E7EB">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <i class="fa fa-file-csv"
+                     style="color:#10B981;font-size:1.3rem"></i>
+                  <div>
+                    <div style="font-weight:700;color:#003087;
+                      font-size:0.875rem" id="previewFileName">
+                    </div>
+                    <div style="font-size:0.72rem;color:#9CA3AF"
+                         id="previewFileSize"></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn-orange" onclick="doImport()"
+                          id="importBtn">
+                    <i class="fa fa-play"></i>
+                    Import Now
+                  </button>
+                  <button class="btn-outline"
+                          onclick="cancelImport()">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Progress -->
+              <div id="importProgress" style="display:none;
+                margin-bottom:14px">
+                <div class="prog-track">
+                  <div class="prog-fill" id="progressFill"></div>
+                </div>
+                <div style="font-size:0.78rem;color:#9CA3AF;
+                  margin-top:6px;text-align:center"
+                     id="progressLabel">
+                  Importing...
+                </div>
+              </div>
+
+              <!-- Preview table -->
+              <div id="previewTableWrap" style="overflow-x:auto;
+                border-radius:8px;border:1px solid #E5E7EB">
+              </div>
+            </div>
+          </div>
         </div>
-        <div><label class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2 block">Academic Year</label>
-             <input type="text" name="academic_year" class="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm font-bold" placeholder="2023-24">
+
+        <!-- Column guide + template -->
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <i class="fa fa-info-circle"></i>
+            Column Format Guide
+            <button class="btn-navy" onclick="downloadTemplate()"
+                    style="margin-left:auto;padding:7px 14px;
+                    font-size:0.78rem">
+              <i class="fa fa-download"></i>
+              Download Template
+            </button>
+          </div>
+          <div class="dash-card-body">
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;
+                font-size:0.78rem">
+                <thead>
+                  <tr style="background:#003087;color:white">
+                    <th style="padding:8px 12px;text-align:left;
+                      font-weight:700">Column Name</th>
+                    <th style="padding:8px 12px;text-align:left">
+                      Required</th>
+                    <th style="padding:8px 12px;text-align:left">
+                      Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="background:#FFF5EB">
+                    <td style="padding:8px 12px;font-weight:700;
+                      color:#003087">full_name</td>
+                    <td><span style="background:#FEE2E2;color:#991B1B;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      REQUIRED</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      Ganesh Shinde</td>
+                  </tr>
+                  <tr style="background:#FFF5EB">
+                    <td style="padding:8px 12px;font-weight:700;
+                      color:#003087">student_id</td>
+                    <td><span style="background:#FEE2E2;color:#991B1B;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      REQUIRED</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      CS2021001</td>
+                  </tr>
+                  <tr style="background:#FFF5EB">
+                    <td style="padding:8px 12px;font-weight:700;
+                      color:#003087">admission_year</td>
+                    <td><span style="background:#FEE2E2;color:#991B1B;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      REQUIRED</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      2021</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;color:#374151">
+                      email</td>
+                    <td><span style="background:#D1FAE5;color:#065F46;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      Optional</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      ganesh@bamu.ac.in</td>
+                  </tr>
+                  <tr style="background:#F8FAFF">
+                    <td style="padding:8px 12px;color:#374151">
+                      department_name</td>
+                    <td><span style="background:#D1FAE5;color:#065F46;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      Optional</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      Computer Science</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;color:#374151">
+                      enrollment_status</td>
+                    <td><span style="background:#D1FAE5;color:#065F46;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      Optional</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      active / graduated / dropped</td>
+                  </tr>
+                  <tr style="background:#F8FAFF">
+                    <td style="padding:8px 12px;color:#374151">
+                      current_year</td>
+                    <td><span style="background:#D1FAE5;color:#065F46;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      Optional</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      1, 2, 3, 4</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 12px;color:#374151">
+                      gender</td>
+                    <td><span style="background:#D1FAE5;color:#065F46;
+                      padding:2px 8px;border-radius:999px;
+                      font-size:0.65rem;font-weight:700">
+                      Optional</span></td>
+                    <td style="padding:8px 12px;color:#6B7280">
+                      Male / Female / Other</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <hr class="border-gray-100 italic">
-        <button type="submit" class="w-full h-14 bg-navy text-white rounded-xl font-bold shadow-xl shadow-navy/20 hover:bg-orange transition-colors">
-           Save Academic Record
+      </div>
+
+      <!-- ══════════ ACADEMIC SECTION ══════════ -->
+      <div id="section_academic" class="section">
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <i class="fa fa-search"></i>
+            Search Student to Manage Semesters
+          </div>
+          <div class="dash-card-body">
+
+            <!-- Student search -->
+            <div style="position:relative;max-width:480px;
+              margin-bottom:20px">
+              <input type="text" id="studentSearchInput"
+                     placeholder="Search by name or student ID..."
+                     style="width:100%;height:44px;padding:0 16px;
+                     border:1.5px solid #E5E7EB;border-radius:8px;
+                     font-size:0.875rem;color:#374151;outline:none;
+                     transition:border-color 0.2s"
+                     onfocus="this.style.borderColor='#003087'"
+                     onblur="this.style.borderColor='#E5E7EB'">
+              <div id="adminAutocomplete"
+                   class="ac-dropdown" style="display:none">
+              </div>
+            </div>
+
+            <!-- Student card -->
+            <div id="manageStudentArea" style="display:none">
+              <div style="display:flex;align-items:center;gap:14px;
+                padding:16px;background:#F8FAFF;border-radius:10px;
+                border:1px solid #E5E7EB;margin-bottom:20px">
+                <div id="asAvatar"
+                     style="width:48px;height:48px;border-radius:50%;
+                     background:linear-gradient(135deg,#003087,#F47920);
+                     color:white;display:flex;align-items:center;
+                     justify-content:center;font-weight:800;
+                     font-size:1rem;flex-shrink:0">
+                </div>
+                <div style="flex:1">
+                  <div id="asName"
+                       style="font-weight:700;color:#003087;
+                       font-size:1rem"></div>
+                  <div id="asID"
+                       style="font-size:0.78rem;color:#9CA3AF;
+                       font-family:monospace"></div>
+                </div>
+                <button class="btn-navy" onclick="openAddSemModal()">
+                  <i class="fa fa-plus"></i>
+                  Add Semester
+                </button>
+              </div>
+
+              <div class="sem-grid" id="asSemsGrid"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dash-content -->
+  </div><!-- /dash-main -->
+</div><!-- /dash-layout -->
+
+<!-- ADD SEMESTER MODAL -->
+<div id="semModal" style="display:none;position:fixed;inset:0;
+  background:rgba(0,48,135,0.4);backdrop-filter:blur(4px);
+  z-index:100;display:none;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:16px;padding:28px;
+    width:90%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <div style="display:flex;justify-content:space-between;
+      align-items:center;margin-bottom:20px">
+      <h3 style="font-size:1rem;font-weight:800;color:#003087;
+        text-transform:uppercase;letter-spacing:0.06em">
+        Add / Update Semester
+      </h3>
+      <button onclick="closeSemModal()"
+        style="background:none;border:none;color:#9CA3AF;
+        cursor:pointer;font-size:1.2rem">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <form id="semForm">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            Semester Number *
+          </label>
+          <input name="semester_number" type="number"
+                 min="1" max="12" required
+                 style="width:100%;height:38px;padding:0 10px;
+                 border:1.5px solid #E5E7EB;border-radius:7px;
+                 font-size:0.85rem;color:#374151;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            Academic Year *
+          </label>
+          <input name="academic_year" type="text"
+                 placeholder="2023-24" required
+                 style="width:100%;height:38px;padding:0 10px;
+                 border:1.5px solid #E5E7EB;border-radius:7px;
+                 font-size:0.85rem;color:#374151;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            SGPA
+          </label>
+          <input name="sgpa" type="number" step="0.01"
+                 min="0" max="10"
+                 style="width:100%;height:38px;padding:0 10px;
+                 border:1.5px solid #E5E7EB;border-radius:7px;
+                 font-size:0.85rem;color:#374151;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            CGPA
+          </label>
+          <input name="cgpa" type="number" step="0.01"
+                 min="0" max="10"
+                 style="width:100%;height:38px;padding:0 10px;
+                 border:1.5px solid #E5E7EB;border-radius:7px;
+                 font-size:0.85rem;color:#374151;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            Attendance %
+          </label>
+          <input name="attendance_pct" type="number"
+                 step="0.1" min="0" max="100"
+                 style="width:100%;height:38px;padding:0 10px;
+                 border:1.5px solid #E5E7EB;border-radius:7px;
+                 font-size:0.85rem;color:#374151;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.7rem;font-weight:700;
+            color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+            Result
+          </label>
+          <select name="result"
+            style="width:100%;height:38px;padding:0 10px;
+            border:1.5px solid #E5E7EB;border-radius:7px;
+            font-size:0.85rem;color:#374151;outline:none;
+            background:white">
+            <option value="pending">Pending</option>
+            <option value="pass">Pass</option>
+            <option value="fail">Fail</option>
+            <option value="backlog">Backlog</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="display:block;font-size:0.7rem;font-weight:700;
+          color:#9CA3AF;text-transform:uppercase;margin-bottom:5px">
+          Backlogs
+        </label>
+        <input name="backlogs" type="number"
+               min="0" max="10" value="0"
+               style="width:100%;height:38px;padding:0 10px;
+               border:1.5px solid #E5E7EB;border-radius:7px;
+               font-size:0.85rem;color:#374151;outline:none">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button type="submit" class="btn-navy"
+                style="flex:1;justify-content:center">
+          <i class="fa fa-save"></i>
+          Save Semester
         </button>
-     </form>
+        <button type="button" class="btn-outline"
+                onclick="closeSemModal()">
+          Cancel
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script src="/assets/js/admin.js"></script>
 </body>
