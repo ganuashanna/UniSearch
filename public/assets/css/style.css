@@ -471,3 +471,109 @@ body.dark .status-pill.active {
 .toast.success { background: var(--navy); color: white; }
 .toast.error   { background: var(--danger); color: white; }
 .toast.info    { background: var(--orange); color: white; }
+/* ===== CRITICAL CONTRAST FIXES ===== */
+
+/* Table rows - ensure dark text on light rows */
+.data-table td {
+  color: #1A1A2E !important;
+  background-color: #ffffff;
+}
+.data-table tbody tr:nth-child(even) td {
+  background-color: #F0F4FF;
+  color: #1A1A2E !important;
+}
+.data-table tbody tr:hover td {
+  background-color: #DDE8FF !important;
+  color: #003087 !important;
+}
+
+/* Stats strip - bright numbers on navy */
+#heroTotal, #heroActive, #heroDepts, #heroBatches {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  display: block !important;
+}
+#heroTotal  { color: #FFFFFF !important; }
+#heroActive { color: #6EE7B7 !important; }
+#heroDepts  { color: #93C5FD !important; }
+#heroBatches{ color: #FCD34D !important; }
+
+/* Filter panel - always white bg dark text */
+.filter-panel {
+  background: #FFFFFF !important;
+  color: #1A1A2E !important;
+}
+.filter-panel * {
+  color: #1A1A2E !important;
+}
+.filter-panel select,
+.filter-panel input {
+  background: #FFFFFF !important;
+  color: #1A1A2E !important;
+  border: 1.5px solid #C3D4F0 !important;
+}
+.status-pill {
+  background: #EBF2FF !important;
+  color: #003087 !important;
+  border: 1.5px solid #C3D4F0 !important;
+}
+.status-pill.active {
+  background: #F47920 !important;
+  color: #FFFFFF !important;
+  border-color: #F47920 !important;
+}
+
+/* Student name in table - bold dark */
+.student-name {
+  font-weight: 700 !important;
+  color: #003087 !important;
+}
+.student-email {
+  color: #4A5568 !important;
+  font-size: 0.78rem !important;
+}
+
+/* Badge text always visible */
+.badge {
+  font-weight: 700 !important;
+  font-size: 0.72rem !important;
+}
+.badge-active      { background:#D1FAE5 !important; color:#065F46 !important; }
+.badge-graduated   { background:#DBEAFE !important; color:#1E40AF !important; }
+.badge-dropped     { background:#FEE2E2 !important; color:#991B1B !important; }
+.badge-suspended   { background:#FEF3C7 !important; color:#92400E !important; }
+.badge-transferred { background:#E0F2FE !important; color:#075985 !important; }
+
+/* Action buttons visible */
+.btn-icon {
+  background: #EBF2FF !important;
+  color: #003087 !important;
+  border: 1px solid #C3D4F0 !important;
+}
+.btn-icon:hover {
+  background: #003087 !important;
+  color: #FFFFFF !important;
+}
+
+/* Pagination buttons */
+.page-btn {
+  background: #FFFFFF !important;
+  color: #1A1A2E !important;
+  border: 1px solid #C3D4F0 !important;
+}
+.page-btn.active {
+  background: #003087 !important;
+  color: #FFFFFF !important;
+}
+
+/* Results count text */
+#resultsFrom, #resultsTo, #resultsTotal {
+  color: #003087 !important;
+  font-weight: 700 !important;
+}
+
+/* Search input text */
+.search-input, #searchInput {
+  color: #1A1A2E !important;
+  background: #FFFFFF !important;
+}
