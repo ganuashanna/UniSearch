@@ -692,3 +692,24 @@ table.data-table {
 .data-table tbody tr:first-child td {
   border-top: 1px solid var(--border) !important;
 }
+
+/* ═══ FIX: Row #1 hidden behind sticky header ═══ */
+#tableView {
+  overflow-x: auto;
+  overflow-y: visible !important;
+}
+
+/* Remove sticky from table header — it causes row #1 to hide */
+.data-table thead {
+  position: relative !important;
+  top: auto !important;
+}
+
+/* Add spacing so content starts below navbar */
+.results-box {
+  overflow: visible !important;
+}
+
+.data-table tbody tr:first-child td {
+  border-top: 2px solid #E5E7EB !important;
+}
