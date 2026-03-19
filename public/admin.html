@@ -8,161 +8,302 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-navy  { background-color: #003087; }
+    .text-navy { color: #003087; }
+    .text-orange { color: #F47920; }
+    .border-orange { border-color: #F47920; }
+    .hover\:bg-orange:hover { background-color: #F47920; }
+    .focus\:border-orange:focus { border-color: #F47920; }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60% { transform: translateX(-8px); }
+      40%,80% { transform: translateX(8px); }
+    }
+    .animate-fade-in { animation: fade-in 0.4s ease forwards; }
+    .do-shake { animation: shake 0.4s ease; }
+    #loginError { display: none; }
+    .login-btn {
+      width: 100%; height: 56px;
+      background: #003087; color: white;
+      border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center;
+      justify-content: center; gap: 10px;
+    }
+    .login-btn:hover { background: #F47920; }
+    .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+    .pwd-input {
+      width: 100%; height: 56px;
+      background: #F9FAFB;
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 0 48px 0 20px;
+      font-size: 1rem; font-weight: 600;
+      color: #003087; outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .pwd-input:focus { border-color: #F47920; background: #fff; }
+  </style>
 </head>
-<body class="bg-gray-100">
+<body style="background:#F0F4FF;margin:0">
 
-<div class="min-h-screen flex flex-col md:flex-row shadow-2xl overflow-hidden">
-    <!-- Left: Branding -->
-    <div class="md:w-1/2 relative bg-navy overflow-hidden flex flex-col items-center justify-center p-12 text-center text-white">
-        <div class="absolute inset-0 z-0 bg-cover bg-center opacity-25" 
-             style="background-image: url('/assets/img/campus-hero.jpg');">
+<!-- Auth guard -->
+<script>
+  if (localStorage.getItem('uni_admin_token')) {
+    window.location.href = '/dashboard';
+  }
+</script>
+
+<div style="min-height:100vh;display:flex;flex-direction:row">
+
+  <!-- LEFT PANEL — BAMU Branding -->
+  <div style="width:55%;background:#003087;position:relative;
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:48px;text-align:center;
+    color:white;overflow:hidden">
+
+    <!-- Background image -->
+    <div style="position:absolute;inset:0;
+      background:url('/assets/img/campus-hero.jpg') center/cover no-repeat;
+      opacity:0.2;z-index:0"></div>
+    <div style="position:absolute;inset:0;background:#003087;opacity:0.75;z-index:1"></div>
+
+    <!-- Content -->
+    <div style="position:relative;z-index:2;max-width:420px">
+      <!-- BAMU Logo -->
+      <img src="/assets/img/bamu-logo.png"
+           alt="BAMU"
+           style="height:90px;margin:0 auto 16px;display:block;filter:brightness(1.2)"
+           onerror="this.style.display='none'">
+
+      <h2 style="font-size:1.1rem;font-weight:800;
+        letter-spacing:0.06em;text-transform:uppercase;
+        line-height:1.4;margin:0 0 8px">
+        Dr. Babasaheb Ambedkar Marathwada University
+      </h2>
+      <p style="color:rgba(255,255,255,0.65);font-size:0.85rem;margin:0 0 32px">
+        Chhatrapati Sambhajinagar, Maharashtra
+      </p>
+
+      <!-- VC Photo -->
+      <img src="/assets/img/vc-photo.jpg"
+           alt="Vice Chancellor"
+           style="width:110px;height:110px;border-radius:50%;
+           border:4px solid #F47920;object-fit:cover;
+           margin:0 auto 12px;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.3)"
+           onerror="this.style.display='none'">
+      <p style="font-weight:700;font-size:0.9rem;margin:0 0 4px">
+        Prof. (Dr.) Vijay Fulari
+      </p>
+      <p style="color:#F47920;font-size:0.72rem;font-weight:700;
+        text-transform:uppercase;letter-spacing:0.08em;margin:0 0 32px">
+        Vice Chancellor
+      </p>
+
+      <!-- Badges -->
+      <div style="display:flex;justify-content:center;gap:20px;
+        background:rgba(255,255,255,0.1);padding:16px;border-radius:12px">
+        <img src="/assets/img/naac-grade.png" alt="NAAC"
+             style="height:56px" onerror="this.style.display='none'">
+        <img src="/assets/img/nirf-ranking.png" alt="NIRF"
+             style="height:56px" onerror="this.style.display='none'">
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:flex;justify-content:center;gap:24px;
+        margin-top:24px;padding-top:20px;
+        border-top:1px solid rgba(255,255,255,0.15)">
+        <div>
+          <div style="font-size:1.4rem;font-weight:800">1958</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase">Est.</div>
         </div>
-        <div class="absolute inset-0 z-10 bg-navy opacity-80"></div>
-        
-        <div class="relative z-20 space-y-8 max-w-lg">
-            <img src="/assets/img/bamu-logo.png" alt="BAMU Logo" class="h-24 mx-auto mb-4 filter brightness-125">
-            <h2 class="text-2xl font-black leading-tight uppercase tracking-widest">
-                Dr. Babasaheb Ambedkar Marathwada University
-            </h2>
-            <p class="text-gray-300 font-medium">Chhatrapati Sambhajinagar, Maharashtra</p>
-            
-            <!-- VC Photo -->
-            <div class="mt-8">
-                <img src="/assets/img/vc-photo.jpg" 
-                     class="h-32 w-32 rounded-full border-4 border-orange mx-auto shadow-2xl object-cover" 
-                     alt="Vice Chancellor">
-                <p class="mt-4 font-bold text-sm">Prof. (Dr.) Vijay Fulari</p>
-                <p class="text-xs text-orange font-bold uppercase tracking-wider">Vice Chancellor</p>
-            </div>
-            
-            <div class="flex justify-center gap-6 mt-12 bg-white/10 p-4 rounded-xl backdrop-blur-md">
-                <img src="/assets/img/naac-grade.png" class="h-14" alt="NAAC">
-                <img src="/assets/img/nirf-ranking.png" class="h-14" alt="NIRF">
-            </div>
+        <div>
+          <div style="font-size:1.4rem;font-weight:800">752</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase">Acres</div>
         </div>
+        <div>
+          <div style="font-size:1.4rem;font-weight:800">489</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase">Colleges</div>
+        </div>
+        <div>
+          <div style="font-size:1.4rem;font-weight:800">4.5L+</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase">Students</div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Right: Login Form -->
-    <div class="md:w-1/2 bg-white flex items-center justify-center p-12">
-        <div id="loginCard" class="w-full max-w-sm space-y-8 animate-fade-in">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-blue-50 text-navy rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
-                    <i class="fa fa-lock"></i>
-                </div>
-                <h1 class="text-3xl font-black text-navy">Admin Portal</h1>
-                <p class="text-gray-500 font-medium mt-1">UniSearch Administration System</p>
-            </div>
+  <!-- RIGHT PANEL — Login Form -->
+  <div style="width:45%;background:white;display:flex;
+    align-items:center;justify-content:center;padding:48px">
 
-            <div class="space-y-6">
-                <div>
-                   <label class="text-xs font-black text-gray-400 uppercase tracking-widest block mb-2">Admin Password</label>
-                   <div class="relative">
-                      <input type="password" id="passwordInput" 
-                        class="w-full h-14 bg-gray-50 border-2 border-gray-100 rounded-xl px-5 text-navy font-bold focus:border-orange focus:bg-white outline-none transition-all pr-12"
-                        placeholder="********">
-                      <button onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy transition-colors">
-                        <i id="eyeIcon" class="fa fa-eye"></i>
-                      </button>
-                   </div>
-                </div>
+    <div id="loginCard" class="animate-fade-in"
+         style="width:100%;max-width:360px">
 
-                <div id="loginError" class="hidden p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 flex items-center gap-3">
-                   <i class="fa fa-exclamation-circle"></i>
-                   <span id="loginErrorMsg">Invalid password. Please try again.</span>
-                </div>
-
-                <button id="loginBtn" onclick="doLogin()" 
-                    class="w-full h-14 bg-navy text-white rounded-xl font-bold hover:bg-orange transition-all shadow-xl shadow-navy/20 flex items-center justify-center gap-3">
-                    <i class="fa fa-sign-in-alt"></i> Sign In
-                </button>
-            </div>
-
-            <div class="text-center">
-                <a href="/" class="text-sm font-bold text-navy hover:text-orange transition-colors">
-                    <i class="fa fa-arrow-left mr-2"></i> Back to Main Search
-                </a>
-            </div>
-            
-            <p class="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest pt-12 border-t border-gray-100">
-                &copy; Dr. BAMU UniSearch &bull; System V2.0
-            </p>
+      <!-- Header -->
+      <div style="text-align:center;margin-bottom:36px">
+        <div style="width:64px;height:64px;background:#EBF2FF;
+          border-radius:16px;display:flex;align-items:center;
+          justify-content:center;margin:0 auto 16px;
+          font-size:1.6rem;color:#003087;box-shadow:inset 0 2px 8px rgba(0,48,135,0.1)">
+          <i class="fa fa-lock"></i>
         </div>
+        <h1 style="font-size:1.8rem;font-weight:800;color:#003087;margin:0 0 6px">
+          Admin Portal
+        </h1>
+        <p style="color:#718096;font-size:0.9rem;margin:0">
+          UniSearch Administration System
+        </p>
+      </div>
+
+      <!-- Form -->
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:0.72rem;font-weight:700;
+          color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;
+          margin-bottom:8px">
+          Admin Password
+        </label>
+        <div style="position:relative">
+          <input type="password"
+                 id="passwordInput"
+                 class="pwd-input"
+                 placeholder="Enter password"
+                 autocomplete="current-password">
+          <button onclick="togglePassword()"
+                  type="button"
+                  style="position:absolute;right:14px;top:50%;
+                  transform:translateY(-50%);background:none;border:none;
+                  color:#9CA3AF;cursor:pointer;font-size:1rem;padding:4px">
+            <i id="eyeIcon" class="fa fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error box -->
+      <div id="loginError"
+           style="margin-bottom:16px;padding:12px 16px;
+           background:#FEF2F2;color:#DC2626;border-radius:10px;
+           font-size:0.82rem;font-weight:600;
+           border:1px solid #FECACA;
+           display:flex;align-items:center;gap:8px">
+        <i class="fa fa-exclamation-circle"></i>
+        <span id="loginErrorMsg">Invalid password.</span>
+      </div>
+
+      <!-- Login Button -->
+      <button id="loginBtn"
+              onclick="doLogin()"
+              class="login-btn">
+        <i class="fa fa-sign-in-alt"></i>
+        Sign In
+      </button>
+
+      <!-- Back link -->
+      <div style="text-align:center;margin-top:24px">
+        <a href="/"
+           style="font-size:0.85rem;font-weight:600;
+           color:#003087;text-decoration:none">
+          <i class="fa fa-arrow-left" style="margin-right:6px"></i>
+          Back to Student Search
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <p style="text-align:center;font-size:0.68rem;color:#D1D5DB;
+        font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+        margin-top:40px;padding-top:20px;border-top:1px solid #F3F4F6">
+        &copy; Dr. BAMU UniSearch &bull; All Rights Reserved
+      </p>
     </div>
+  </div>
+
 </div>
 
 <script>
-// Auth guard - if already logged in, go to dashboard
-if (localStorage.getItem('uni_admin_token')) {
-  window.location.href = '/dashboard';
-}
-
 async function doLogin() {
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('loginError');
-  const pwd = document.getElementById('passwordInput').value.trim();
+  const btn    = document.getElementById('loginBtn');
+  const errBox = document.getElementById('loginError');
+  const errMsg = document.getElementById('loginErrorMsg');
+  const pwd    = document.getElementById('passwordInput').value.trim();
 
-  if (!pwd) { showError('Please enter your password'); return; }
+  // Hide error
+  errBox.style.display = 'none';
+
+  if (!pwd) {
+    showError('Please enter your password');
+    return;
+  }
 
   btn.disabled = true;
   btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Signing in...';
-  if (err) err.style.display = 'none';
 
   try {
     const response = await fetch('/api/login', {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd })
+      body:    JSON.stringify({ password: pwd })
     });
 
-    const text = await response.text();
     let data = {};
-    try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
+    try {
+      const text = await response.text();
+      data = JSON.parse(text);
+    } catch(e) {
+      data = { error: 'Server returned invalid response' };
+    }
 
     if (response.ok && data.token) {
       localStorage.setItem('uni_admin_token', data.token);
-      window.location.href = '/dashboard';
+      btn.innerHTML = '<i class="fa fa-check"></i> Success! Redirecting...';
+      btn.style.background = '#10B981';
+      setTimeout(() => { window.location.href = '/dashboard'; }, 500);
     } else {
-      showError(data.error || 'Login failed. Check password.');
+      showError(data.error || 'Invalid password. Default is admin123');
       const card = document.getElementById('loginCard');
-      if (card) {
-        card.style.animation = 'shake 0.4s ease';
-        setTimeout(() => card.style.animation = '', 500);
-      }
+      card.classList.remove('do-shake');
+      void card.offsetWidth; // force reflow
+      card.classList.add('do-shake');
+      setTimeout(() => card.classList.remove('do-shake'), 500);
     }
   } catch(e) {
-    showError('Network error: ' + e.message);
+    showError('Connection error: ' + e.message);
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa fa-sign-in-alt"></i> Sign In';
+    if (btn.style.background !== 'rgb(16, 185, 129)') {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-sign-in-alt"></i> Sign In';
+    }
   }
 }
 
 function showError(msg) {
-  const err = document.getElementById('loginError');
-  if (err) { err.textContent = msg; err.style.display = 'block'; }
+  const errBox = document.getElementById('loginError');
+  const errMsg = document.getElementById('loginErrorMsg');
+  if (errMsg) errMsg.textContent = msg;
+  else errBox.textContent = msg;
+  errBox.style.display = 'flex';
 }
 
 function togglePassword() {
   const inp  = document.getElementById('passwordInput');
   const icon = document.getElementById('eyeIcon');
-  if (!inp) return;
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  if (icon) icon.className = inp.type === 'password' ? 'fa fa-eye' : 'fa fa-eye-slash';
+  inp.type   = inp.type === 'password' ? 'text' : 'password';
+  icon.className = inp.type === 'password' ? 'fa fa-eye' : 'fa fa-eye-slash';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const inp = document.getElementById('passwordInput');
-  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-});
+// Enter key support
+document.getElementById('passwordInput')
+  .addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
 </script>
-
-<style>
-@keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fade-in { animation: fade-in 0.4s ease forwards; }
-
-@keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-8px); } 50% { transform: translateX(8px); } }
-.animate-shake { animation: shake 0.4s ease; }
-</style>
 
 </body>
 </html>
