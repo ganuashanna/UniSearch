@@ -606,7 +606,88 @@ table.data-table {
 .data-table thead th { position: static !important; }
 #tableView { overflow: visible !important; }
 #tableView > div { overflow-x: auto; }
+/* ═══════════════════════════════════════
+   CRITICAL FIXES — Row #1 + Contrast
+═══════════════════════════════════════ */
 
+/* Fix row #1 hidden behind sticky header */
+.data-table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+.data-table thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+}
+#tableView {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+.data-table tbody tr:first-child td {
+  padding-top: 12px !important;
+  border-top: none !important;
+}
+
+/* Dashboard sidebar fixes */
+.sidebar {
+  width: 240px !important;
+  min-height: 100vh !important;
+  background: #003087 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+.sidebar-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 11px 16px !important;
+  border-radius: 8px !important;
+  color: rgba(255,255,255,0.75) !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+  text-decoration: none !important;
+  margin: 2px 0 !important;
+  white-space: nowrap !important;
+}
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: #F47920 !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+.sidebar-link i {
+  width: 18px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Stat cards */
+.stat-card {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 20px 24px !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 2px 8px rgba(0,48,135,0.08) !important;
+}
+.stat-card .stat-num {
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: #003087 !important;
+  line-height: 1.1 !important;
+}
+.stat-card .stat-lbl {
+  font-size: 0.72rem !important;
+  color: #9CA3AF !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 700 !important;
+  margin-top: 4px !important;
+}
 /* Fix table container not clipping top row */
 .data-table tbody tr:first-child td {
   border-top: 1px solid var(--border) !important;
